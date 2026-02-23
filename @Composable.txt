@@ -1,0 +1,43 @@
+@Composable
+fun NewsScreen() {
+
+    val tabs = listOf("Announcements", "Obituary", "Bulletin")
+    var selectedTab by remember { mutableStateOf(0) }
+
+    val allNews = listOf(
+        NewsItem("Feast preparation meeting", "10 Jan 2026", "announcement"),
+        NewsItem("Choir practice notice", "12 Jan 2026", "announcement"),
+        NewsItem("Late Mr. Joseph D'Souza", "8 Jan 2026", "obituary"),
+        NewsItem("Sunday Bulletin Released", "7 Jan 2026", "bulletin")
+    )
+
+    val filteredNews = when (selectedTab) {
+        0 -> allNews.filter { it.type == "announcement" }
+        1 -> allNews.filter { it.type == "obituary" }
+        else -> allNews.filter { it.type == "bulletin" }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        TabRow(selectedTabIndex = selectedTab) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTab == index,
+                    onClick = { selectedTab = index },
+                    text = { Text(title) }
+                )
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(filteredNews) { news ->
+                NewsCard(news)
+            }
+        }
+    }
+}

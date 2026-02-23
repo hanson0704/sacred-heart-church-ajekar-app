@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "586384264624",
+    "project_id": "sacredheartajekarapp",
+    "storage_bucket": "sacredheartajekarapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:586384264624:android:e6a601a6758fb55029da75",
+        "android_client_info": {
+          "package_name": "com.example.sacredheartajekar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJieyHmi6zN19_KFWmDwChIXGAETJqNEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
