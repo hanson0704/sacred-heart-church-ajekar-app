@@ -2,18 +2,15 @@ package com.example.sacredheartajekar.viewmodel
 
 import android.icu.text.SimpleDateFormat
 import androidx.compose.runtime.getValue
-import java.util.Locale
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.autofill.ContentDataType.Companion.Date
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.sacredheartajekar.data.repository.NewsRepository
 import com.example.sacredheartajekar.model.NewsItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import java.util.Date
+import java.util.Locale
 
 class NewsViewModel : ViewModel() {
 
@@ -35,19 +32,52 @@ class NewsViewModel : ViewModel() {
         private set
 
 
+    // POST NEWS
     fun postNews(title: String, type: String) {
+
         isPosting = true
         postMessage = null
+
+        val currentTime = System.currentTimeMillis()
 
         val news = NewsItem(
             title = title,
             date = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date()),
-            type = type
+            type = type,
+            timestamp = currentTime,
+            expiresAt = currentTime + (48 * 60 * 60 * 1000)
         )
 
         repository.addNews(news) { success ->
+
             isPosting = false
-            postMessage = if (success) "Posted successfully" else "Failed to post"
+            postMessage =
+                if (success) "Posted successfully"
+                else "Failed to post"
+        }
+    }
+
+
+    // DELETE NEWS
+    fun deleteNews(id: String) {
+
+        repository.deleteNews(id) { success ->
+
+            if (!success) {
+                postMessage = "Delete failed"
+            }
+        }
+    }
+
+
+    // UPDATE NEWS
+    fun updateNews(newsItem: NewsItem) {
+
+        repository.updateNews(newsItem) { success ->
+
+            if (!success) {
+                postMessage = "Update failed"
+            }
         }
     }
 }

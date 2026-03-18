@@ -10,11 +10,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sacredheartajekar.ui.theme.SacredHeartAjekarTheme
 import com.example.sacredheartajekar.viewmodel.NewsViewModel
-//composable
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminPanelScreen(
     onLogout: () -> Unit,
+    onAddEventClick: () -> Unit,// ⭐ navigation callback
+    onAddGalleryClick: () -> Unit,
     viewModel: NewsViewModel = viewModel()
 ) {
     var title by remember { mutableStateOf("") }
@@ -38,7 +40,7 @@ fun AdminPanelScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        // 🔓 Logout Row
+        // 🔓 Logout
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
@@ -48,12 +50,13 @@ fun AdminPanelScreen(
             }
         }
 
+        // 🏷 Title
         Text(
             text = "Parish Admin Panel",
             style = MaterialTheme.typography.headlineMedium
         )
 
-        // 📌 Title Field
+        // 📌 Title Input
         OutlinedTextField(
             value = title,
             onValueChange = {
@@ -108,7 +111,7 @@ fun AdminPanelScreen(
             Text(it, color = MaterialTheme.colorScheme.error)
         }
 
-        // 📌 Post Button
+        // 📌 Post Button (News)
         Button(
             onClick = {
                 val trimmedTitle = title.trim()
@@ -131,7 +134,6 @@ fun AdminPanelScreen(
                 if (valid) {
                     viewModel.postNews(trimmedTitle, selectedTypeValue)
 
-                    // Reset form
                     title = ""
                     selectedTypeDisplay = ""
                     selectedTypeValue = ""
@@ -146,7 +148,7 @@ fun AdminPanelScreen(
                     strokeWidth = 2.dp
                 )
             } else {
-                Text("Post")
+                Text("Post Update")
             }
         }
 
@@ -160,6 +162,25 @@ fun AdminPanelScreen(
                     MaterialTheme.colorScheme.error
             )
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // 🔥 ADD EVENT BUTTON (NEW FEATURE)
+        Button(
+            onClick = onAddEventClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Add Event")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            onClick = onAddGalleryClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Upload Gallery Image")
+        }
     }
 }
 
@@ -167,6 +188,10 @@ fun AdminPanelScreen(
 @Composable
 fun AdminPanelPreview() {
     SacredHeartAjekarTheme {
-        AdminPanelScreen(onLogout = {})
+        AdminPanelScreen(
+            onLogout = {},
+            onAddEventClick = {},
+            onAddGalleryClick = {},
+        )
     }
 }

@@ -1,10 +1,9 @@
 package com.example.sacredheartajekar.model
 
-data class NewsItem(
+data class EventItem(
     val id: String = "",
     val title: String = "",
+    val description: String = "",
     val date: String = "",
-    val type: String = "",
-    val timestamp: Long = 0L,
-    val expiresAt: Long = 0L
+    val timestamp: Long = 0L
 )
