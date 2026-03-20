@@ -1,33 +1,38 @@
 package com.example.sacredheartajekar
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Article
+import androidx.compose.material.icons.filled.AdminPanelSettings
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Church
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.sacredheartajekar.ui.theme.SacredHeartAjekarTheme
 import com.example.sacredheartajekar.model.NewsItem
-
-
+import com.example.sacredheartajekar.ui.theme.SacredHeartAjekarTheme
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun HomeScreen(
@@ -37,49 +42,143 @@ fun HomeScreen(
     onMassTimingsClick: () -> Unit,
     onAboutUsClick: () -> Unit,
     latestAnnouncement: NewsItem?,
-    onAdminClick: ()-> Unit
+    onAdminClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(16.dp).fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                        MaterialTheme.colorScheme.surface,
+                        MaterialTheme.colorScheme.background
+                    )
+                )
+            )
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            TextButton(onClick = onAdminClick) {
-                Text("Admin")
-            }
-        }
-        Text(
-            "Sacred Heart of Jesus Church Ajekar",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-        Text(
-            "Welcome to the Parish App",
-            style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Center
-        )
-
-        Card(
-            modifier = Modifier.padding(16.dp),
-            shape = RoundedCornerShape(12.dp)
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    "Today's Mass",
+                    text = "Welcome",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Text(
+                    text = "Sacred Heart of Jesus Church",
+                    style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
-                Text("6:30 AM")
+
+                Text(
+                    text = "Ajekar",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Surface(
+                shape = CircleShape,
+                tonalElevation = 4.dp,
+                shadowElevation = 4.dp,
+                modifier = Modifier.size(48.dp)
+            ) {
+                IconButton(onClick = onAdminClick) {
+                    Icon(
+                        imageVector = Icons.Default.AdminPanelSettings,
+                        contentDescription = "Admin Login"
+                    )
+                }
+            }
+        }
+
+        Card(
+            shape = RoundedCornerShape(28.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Church,
+                            contentDescription = null,
+                            modifier = Modifier.padding(10.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    Column {
+                        Text(
+                            text = "Parish App",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Faith, updates, and community in one place",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+
+        Card(
+            shape = RoundedCornerShape(24.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Text(
+                    text = "Today's Mass",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = "6:30 AM",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = "Join the parish in prayer and worship.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
 
                 Button(
-                    onClick = {},
+                    onClick = onMassTimingsClick,
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.align(Alignment.End)
                 ) {
                     Text("View Full Schedule")
@@ -88,98 +187,132 @@ fun HomeScreen(
         }
 
         Card(
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-
-                Text("Latest Announcement", fontWeight = FontWeight.Bold)
-
-                Text(
-                    text = latestAnnouncement?.title ?: "Loading announcements...",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-
-
-                Text(
-                    text = latestAnnouncement?.date ?: "",
-                    style = MaterialTheme.typography.bodySmall
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(onClick = { onNewsClick() }) {
-                        Text("View All News")
-                    }
-                }
-            }
-        }
-
-        Card(
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(24.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    HomeButton(
-                        "About Us",
-                        modifier = Modifier.weight(1f),
-                        onClick = {onAboutUsClick()}
-                    )
-                    HomeButton(
-                        "Mass Timings",
-                        modifier = Modifier.weight(1f),
-                        onClick = {onMassTimingsClick()}
+                Text(
+                    text = "Latest Announcement",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = latestAnnouncement?.title ?: "No announcements available",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                if (!latestAnnouncement?.date.isNullOrBlank()) {
+                    Text(
+                        text = latestAnnouncement.date,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
+
+                Button(
+                    onClick = onNewsClick,
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier.align(Alignment.Start)
                 ) {
-                    HomeButton(
-                        "News",
-                        modifier = Modifier.weight(1f), onClick = {onNewsClick()}
-                    )
-                    HomeButton(
-                        "Contact Us",
-                        modifier = Modifier.weight(1f),
-                        onClick = {onContactClick()}
-                    )
+                    Text("View All Updates")
                 }
             }
         }
 
+        Text(
+            text = "Quick Access",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            PremiumHomeActionCard(
+                title = "About Us",
+                icon = Icons.Default.Info,
+                modifier = Modifier.weight(1f),
+                onClick = onAboutUsClick
+            )
+
+            PremiumHomeActionCard(
+                title = "Mass Timings",
+                icon = Icons.Default.Schedule,
+                modifier = Modifier.weight(1f),
+                onClick = onMassTimingsClick
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            PremiumHomeActionCard(
+                title = "News",
+                icon = Icons.AutoMirrored.Filled.Article,
+                modifier = Modifier.weight(1f),
+                onClick = onNewsClick
+            )
+
+            PremiumHomeActionCard(
+                title = "Contact",
+                icon = Icons.Default.Call,
+                modifier = Modifier.weight(1f),
+                onClick = onContactClick
+            )
+        }
     }
 }
 
 @Composable
-fun HomeButton(
-    label: String,
+fun PremiumHomeActionCard(
+    title: String,
+    icon: ImageVector,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Button(
-        onClick = onClick,
+    Card(
         modifier = modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        shape = RoundedCornerShape(12.dp)
+            .height(124.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(22.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
     ) {
-        Text(
-            text = label,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(14.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.padding(10.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = title,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 
@@ -192,7 +325,11 @@ fun HomeScreenPreview() {
             onContactClick = {},
             onMassTimingsClick = {},
             onAboutUsClick = {},
-            latestAnnouncement =  NewsItem("Preview Announcement","01-01-2026","announcement"),
+            latestAnnouncement = NewsItem(
+                "Choir practice after evening mass",
+                "20-03-2026",
+                "announcement"
+            ),
             onAdminClick = {}
         )
     }
