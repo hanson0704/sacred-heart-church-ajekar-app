@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,7 +25,7 @@ import com.google.firebase.auth.FirebaseAuth
 fun GalleryScreen() {
 
     val viewModel: GalleryViewModel = viewModel()
-    val images by viewModel.images.collectAsState()
+    val images by viewModel.images.collectAsState(initial = emptyList())
 
     var selectedItem by remember { mutableStateOf<GalleryItem?>(null) }
 
@@ -42,12 +43,23 @@ fun GalleryScreen() {
                             fontWeight = FontWeight.Bold
                         )
                     }
-                },
-                navigationIcon = {},
-                actions = {}
+                }
             )
         }
     ) { padding ->
+
+        // 🔥 LOADING STATE
+        if (images.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+            return@Scaffold
+        }
 
         Box(
             modifier = Modifier
@@ -55,23 +67,25 @@ fun GalleryScreen() {
                 .padding(padding)
         ) {
 
-            // 🔥 SINGLE ITEM CENTER
-            if (images.size == 1) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
 
-                val item = images.first()
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
+                items(images) { item ->
 
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { selectedItem = item }
+                            .clickable {
+                                if (item.images.isNotEmpty()) {
+                                    selectedItem = item
+                                }
+                            }
                     ) {
 
                         AsyncImage(
@@ -80,7 +94,8 @@ fun GalleryScreen() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .aspectRatio(1f)
-                                .clip(RoundedCornerShape(16.dp))
+                                .clip(RoundedCornerShape(16.dp)),
+                            contentScale = ContentScale.Crop
                         )
 
                         Spacer(modifier = Modifier.height(6.dp))
@@ -93,54 +108,8 @@ fun GalleryScreen() {
                         )
                     }
                 }
-
-            } else {
-
-                // 🔥 GRID WITH TITLES
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-
-                    items(images) { item ->
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    if (item.images.isNotEmpty()) {
-                                        selectedItem = item
-                                    }
-                                }
-                        ) {
-
-                            AsyncImage(
-                                model = item.images.firstOrNull(),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .aspectRatio(1f)
-                                    .clip(RoundedCornerShape(16.dp))
-                            )
-
-                            Spacer(modifier = Modifier.height(6.dp))
-
-                            Text(
-                                text = item.title,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                maxLines = 1
-                            )
-                        }
-                    }
-                }
             }
 
-            // 🔥 FULL SCREEN VIEW
             selectedItem?.let { item ->
                 FullScreenGallery(
                     item = item,
@@ -209,7 +178,8 @@ fun FullScreenGallery(
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(12.dp)
+                        .padding(12.dp),
+                    contentScale = ContentScale.Fit
                 )
             }
 

@@ -16,15 +16,27 @@ class GalleryRepository {
 
         galleryRef
             .orderBy("timestamp", Query.Direction.DESCENDING)
-            .addSnapshotListener { snapshot, _ ->
+            .addSnapshotListener { snapshot, error ->
 
-                val list = snapshot?.documents?.map { doc ->
+                // ✅ HANDLE ERROR
+                if (error != null) {
+                    onChange(emptyList())
+                    return@addSnapshotListener
+                }
+
+                val list = snapshot?.documents?.mapNotNull { doc ->
+
+                    val imagesRaw = doc.get("images") as? List<*>
+
+                    val images = imagesRaw
+                        ?.mapNotNull { it?.toString() }
+                        ?: emptyList()
 
                     GalleryItem(
                         id = doc.id,
                         title = doc.getString("title") ?: "",
                         description = doc.getString("description") ?: "",
-                        images = doc.get("images") as? List<String> ?: emptyList(),
+                        images = images,
                         timestamp = doc.getLong("timestamp") ?: 0L
                     )
 
@@ -41,15 +53,27 @@ class GalleryRepository {
         onResult: (Boolean) -> Unit
     ) {
 
+        if (uris.isEmpty()) {
+            onResult(false)
+            return
+        }
+
         val urls = mutableListOf<String>()
         var uploadedCount = 0
 
         uris.forEach { uri ->
 
-            val ref = storage.reference.child("gallery/${System.currentTimeMillis()}.jpg")
+            val ref = storage.reference.child(
+                "gallery/${System.currentTimeMillis()}_${uri.lastPathSegment}.jpg"
+            )
 
             ref.putFile(uri)
-                .continueWithTask { ref.downloadUrl }
+                .continueWithTask { task ->
+                    if (!task.isSuccessful) {
+                        task.exception?.let { throw it }
+                    }
+                    ref.downloadUrl
+                }
                 .addOnSuccessListener { url ->
 
                     urls.add(url.toString())
@@ -76,8 +100,6 @@ class GalleryRepository {
     }
 
     fun deleteGallery(id: String) {
-        firestore.collection("gallery")
-            .document(id)
-            .delete()
+        galleryRef.document(id).delete()
     }
 }

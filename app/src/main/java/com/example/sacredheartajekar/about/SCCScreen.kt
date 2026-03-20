@@ -51,7 +51,13 @@ fun SCCScreen(onBack: () -> Unit) {
 
         Text(
             text = """
-                 TextGoesHere
+The Small Christian Community (SCC) is a vital part of parish life, bringing together families and individuals in small groups to grow in faith and fellowship.
+
+In Sacred Heart Church, Ajekar, the parish is divided into 10 wards. Each ward gathers once a month in the homes of parishioners for prayer, reflection on the Word of God, and community bonding.
+
+These gatherings help strengthen unity among members, encourage active participation, and create a sense of belonging within the parish. Families take turns hosting these prayer meetings, making the SCC a shared and meaningful spiritual experience.
+
+Through the SCC, parishioners support one another, grow in faith, and live out Christian values in their daily lives with love, service, and compassion.
             """.trimIndent(),
             style = MaterialTheme.typography.bodyLarge,
             lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.4

@@ -51,7 +51,13 @@ fun AltarBoysScreen(onBack: () -> Unit) {
 
         Text(
             text = """
-                 TextGoesHere
+The Altar Servers play a vital role in assisting the priest during the Holy Mass and other liturgical celebrations. They serve at the altar with devotion, discipline, and reverence, helping create a prayerful and organized environment during worship.
+
+At Sacred Heart Church, Ajekar, the Altar Servers are trained to understand the significance of the liturgy and to carry out their duties with dedication. Their service includes assisting with the preparation of the altar, holding liturgical items, and supporting the smooth conduct of Mass.
+
+Being an Altar Server is not only a responsibility but also a spiritual journey. It encourages young members of the parish to grow in faith, develop discipline, and actively participate in the life of the Church.
+
+We welcome young boys who are interested in serving the Church and deepening their relationship with God to join this ministry.
             """.trimIndent(),
             style = MaterialTheme.typography.bodyLarge,
             lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.4

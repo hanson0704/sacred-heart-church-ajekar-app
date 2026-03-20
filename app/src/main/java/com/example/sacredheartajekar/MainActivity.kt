@@ -168,6 +168,9 @@ fun MainScreen() {
                     },
                     onAddGalleryClick = {
                         navController.navigate("admin_gallery")
+                    },
+                    onPostUpdateClick = {
+                        navController.navigate("post_update")
                     }
                 )
             }
