@@ -1,9 +1,12 @@
 package com.example.sacredheartajekar
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.NavigationBar
@@ -27,15 +30,18 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.sacredheartajekar.about.*
+import com.example.sacredheartajekar.admin.AdminEditMassScreen
 import com.example.sacredheartajekar.admin.AdminEventScreen
 import com.example.sacredheartajekar.admin.AdminGalleryScreen
 import com.example.sacredheartajekar.viewmodel.NewsViewModel
 import com.example.sacredheartajekar.admin.AdminLoginScreen
 import com.example.sacredheartajekar.admin.AdminPanelScreen
+import com.example.sacredheartajekar.admin.AdminPostUpdateScreen
 import com.example.sacredheartajekar.model.NewsItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
@@ -47,6 +53,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         FirebaseMessaging.getInstance().subscribeToTopic("parish_updates")
+
+        // 🔔 ASK NOTIFICATION PERMISSION (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                1
+            )
+        }
 
         setContent {
             SacredHeartAjekarTheme {
@@ -90,10 +105,20 @@ fun MainScreen() {
                     onAboutUsClick = { navController.navigate("about") },
                     latestAnnouncement = latestAnnouncement,
                     onAdminClick = { navController.navigate("admin_login") },
+                    isAdmin = FirebaseAuth.getInstance().currentUser != null,
+                    onEditMassClick = {
+                        navController.navigate("edit_mass")
+                    }
                 )
             }
 
             // ✅ Firebase-driven NewsScreen
+
+            composable("edit_mass") {
+                AdminEditMassScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
             composable("news") { NewsScreen() }
 
             composable("events") { EventsScreen() }
@@ -175,6 +200,11 @@ fun MainScreen() {
                 )
             }
 
+            composable("post_update") {
+                AdminPostUpdateScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
             composable("admin_add_event") {
                 AdminEventScreen(
                     onBack = { navController.popBackStack() }
@@ -254,7 +284,9 @@ fun MainScreenPreview() {
                     "19-02-2026",
                     "announcement"
                 ),
-                onAdminClick = {}
+                onAdminClick = {},
+                isAdmin = true,
+                onEditMassClick = {}
             )
         }
     }

@@ -1,5 +1,7 @@
 package com.example.sacredheartajekar
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,18 +13,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Church
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -30,9 +26,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.sacredheartajekar.model.NewsItem
-import com.example.sacredheartajekar.ui.theme.SacredHeartAjekarTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.sacredheartajekar.model.NewsItem
+import com.example.sacredheartajekar.viewmodel.MassViewModel
+import com.example.sacredheartajekar.ui.theme.SacredHeartAjekarTheme
 
 @Composable
 fun HomeScreen(
@@ -42,8 +40,21 @@ fun HomeScreen(
     onMassTimingsClick: () -> Unit,
     onAboutUsClick: () -> Unit,
     latestAnnouncement: NewsItem?,
-    onAdminClick: () -> Unit
+    onAdminClick: () -> Unit,
+    isAdmin: Boolean,
+    onEditMassClick: () -> Unit
 ) {
+
+    val massViewModel: MassViewModel = viewModel()
+
+    // ✅ FIXED STATE OBSERVATION
+    val firebaseMass by massViewModel.masses
+
+    // ✅ SAFE MASS LOGIC
+    val finalMassList =
+        if (firebaseMass.isNotEmpty()) firebaseMass
+        else getDefaultMass()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -61,124 +72,84 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
+        // 🔝 HEADER
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "Welcome",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Text(
-                    text = "Sacred Heart of Jesus Church",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Text(
-                    text = "Ajekar",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.SemiBold
-                )
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Welcome")
+                Text("Sacred Heart of Jesus Church", fontWeight = FontWeight.Bold)
+                Text("Ajekar", color = MaterialTheme.colorScheme.primary)
             }
 
-            Surface(
-                shape = CircleShape,
-                tonalElevation = 4.dp,
-                shadowElevation = 4.dp,
-                modifier = Modifier.size(48.dp)
-            ) {
-                IconButton(onClick = onAdminClick) {
-                    Icon(
-                        imageVector = Icons.Default.AdminPanelSettings,
-                        contentDescription = "Admin Login"
-                    )
-                }
+            IconButton(onClick = onAdminClick) {
+                Icon(Icons.Default.AdminPanelSettings, contentDescription = "Admin Login")
             }
         }
 
-        Card(
-            shape = RoundedCornerShape(28.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Church,
-                            contentDescription = null,
-                            modifier = Modifier.padding(10.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-                    Column {
-                        Text(
-                            text = "Parish App",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Faith, updates, and community in one place",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-        }
-
+        // 🔥 TODAY MASS
         Card(
             shape = RoundedCornerShape(24.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
                 modifier = Modifier.padding(18.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(
-                    text = "Today's Mass",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
 
-                Text(
-                    text = "6:30 AM",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Today's Mass", fontWeight = FontWeight.Bold)
 
-                Text(
-                    text = "Join the parish in prayer and worship.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                    if (isAdmin) {
+                        IconButton(onClick = onEditMassClick) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit Mass")
+                        }
+                    }
+                }
+
+                // ✅ SAFE LIST DISPLAY
+                if (finalMassList.isEmpty()) {
+
+                    Text(
+                        text = "No Mass Today",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
+                } else {
+
+                    finalMassList.forEach { mass ->
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+
+                            Column {
+                                Text(mass.title)
+
+                                if (mass.note.isNotBlank()) {
+                                    Text(
+                                        mass.note,
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+                            }
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Schedule, contentDescription = null)
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(mass.time, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                }
 
                 Button(
                     onClick = onMassTimingsClick,
-                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.align(Alignment.End)
                 ) {
                     Text("View Full Schedule")
@@ -186,87 +157,37 @@ fun HomeScreen(
             }
         }
 
-        Card(
-            shape = RoundedCornerShape(24.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(18.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Text(
-                    text = "Latest Announcement",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+        // 📢 ANNOUNCEMENT
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+
+                Text("Latest Announcement", fontWeight = FontWeight.Bold)
 
                 Text(
-                    text = latestAnnouncement?.title ?: "No announcements available",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold
+                    latestAnnouncement?.title ?: "No announcements available"
                 )
 
-                if (!latestAnnouncement?.date.isNullOrBlank()) {
-                    Text(
-                        text = latestAnnouncement.date,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                latestAnnouncement?.date?.let {
+                    Text(it)
                 }
 
-                Button(
-                    onClick = onNewsClick,
-                    shape = RoundedCornerShape(14.dp),
-                    modifier = Modifier.align(Alignment.Start)
-                ) {
+                Button(onClick = onNewsClick) {
                     Text("View All Updates")
                 }
             }
         }
 
-        Text(
-            text = "Quick Access",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
+        // 🔽 QUICK ACCESS
+        Text("Quick Access", fontWeight = FontWeight.Bold)
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            PremiumHomeActionCard(
-                title = "About Us",
-                icon = Icons.Default.Info,
-                modifier = Modifier.weight(1f),
-                onClick = onAboutUsClick
-            )
-
-            PremiumHomeActionCard(
-                title = "Mass Timings",
-                icon = Icons.Default.Schedule,
-                modifier = Modifier.weight(1f),
-                onClick = onMassTimingsClick
-            )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            PremiumHomeActionCard("About Us", Icons.Default.Info, Modifier.weight(1f), onAboutUsClick)
+            PremiumHomeActionCard("Mass Timings", Icons.Default.Schedule, Modifier.weight(1f), onMassTimingsClick)
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            PremiumHomeActionCard(
-                title = "News",
-                icon = Icons.AutoMirrored.Filled.Article,
-                modifier = Modifier.weight(1f),
-                onClick = onNewsClick
-            )
-
-            PremiumHomeActionCard(
-                title = "Contact",
-                icon = Icons.Default.Call,
-                modifier = Modifier.weight(1f),
-                onClick = onContactClick
-            )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            PremiumHomeActionCard("News", Icons.AutoMirrored.Filled.Article, Modifier.weight(1f), onNewsClick)
+            PremiumHomeActionCard("Contact", Icons.Default.Call, Modifier.weight(1f), onContactClick)
         }
     }
 }
@@ -283,7 +204,7 @@ fun PremiumHomeActionCard(
             .height(124.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(22.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
+        elevation = CardDefaults.cardElevation(5.dp)
     ) {
         Column(
             modifier = Modifier
@@ -292,30 +213,16 @@ fun PremiumHomeActionCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Surface(
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier.padding(10.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
+            Surface(shape = CircleShape) {
+                Icon(icon, contentDescription = null, modifier = Modifier.padding(10.dp))
             }
-
             Spacer(modifier = Modifier.height(10.dp))
-
-            Text(
-                text = title,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+            Text(title, textAlign = TextAlign.Center)
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
@@ -326,11 +233,13 @@ fun HomeScreenPreview() {
             onMassTimingsClick = {},
             onAboutUsClick = {},
             latestAnnouncement = NewsItem(
-                "Choir practice after evening mass",
+                "Sample Announcement",
                 "20-03-2026",
                 "announcement"
             ),
-            onAdminClick = {}
+            onAdminClick = {},
+            isAdmin = true,
+            onEditMassClick = {}
         )
     }
 }

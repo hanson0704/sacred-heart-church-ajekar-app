@@ -19,13 +19,16 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import com.example.sacredheartajekar.model.GalleryItem
 import com.google.firebase.auth.FirebaseAuth
+import coil.request.ImageRequest
+import coil.request.CachePolicy
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GalleryScreen() {
 
     val viewModel: GalleryViewModel = viewModel()
-    val images by viewModel.images.collectAsState(initial = emptyList())
+    val images by viewModel.images.collectAsState()
 
     var selectedItem by remember { mutableStateOf<GalleryItem?>(null) }
 
@@ -56,7 +59,22 @@ fun GalleryScreen() {
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                    Text(
+                        text = "No Photos Yet 📷",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Gallery will appear once images are uploaded",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
             return@Scaffold
         }
@@ -89,13 +107,18 @@ fun GalleryScreen() {
                     ) {
 
                         AsyncImage(
-                            model = item.images.firstOrNull(),
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(item.images.firstOrNull())
+                                .crossfade(true)
+                                .diskCachePolicy(CachePolicy.ENABLED)
+                                .memoryCachePolicy(CachePolicy.ENABLED)
+                                .networkCachePolicy(CachePolicy.ENABLED)
+                                .size(400) // 🔥 important
+                                .build(),
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .aspectRatio(1f)
-                                .clip(RoundedCornerShape(16.dp)),
-                            contentScale = ContentScale.Crop
                         )
 
                         Spacer(modifier = Modifier.height(6.dp))
