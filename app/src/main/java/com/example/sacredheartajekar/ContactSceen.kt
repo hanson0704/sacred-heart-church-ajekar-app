@@ -38,8 +38,8 @@ import androidx.core.net.toUri
 
 @Composable
 fun ContactScreen() {
-    val phoneNumber = "+919900469293"
-    val email = "hansonvaz0704@gmail.com"
+    val phoneNumber = "+919141031601"
+    val email = "sacredheartofjesuschurchajekar@gmail.com"
     val context = LocalContext.current
 //    val latitude = 13.321964465044813
 //    val longitude = 74.99577431977416
