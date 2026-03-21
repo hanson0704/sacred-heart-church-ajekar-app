@@ -34,7 +34,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sacredheartajekar.ui.theme.SacredHeartAjekarTheme
 import androidx.core.net.toUri
-
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.window.Dialog
 
 @Composable
 fun ContactScreen() {
@@ -46,11 +64,13 @@ fun ContactScreen() {
     val mapUrl = "https://www.google.com/maps/place/Sacred+Heart+of+Jesus+Church,+Ajekar/@13.3219798,74.995604,21z/data=!4m6!3m5!1s0x3bbb59d9b6ad02a5:0x7f9c355d5796fb0!8m2!3d13.3219651!4d74.9957747!16s%2Fg%2F11pv_5hf3m?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoASAFQAw%3D%3D"
 //    val placeLabel = "Sacred Heart of Jesus Church, Ajekar"
 
+    var showImage by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
@@ -105,7 +125,7 @@ fun ContactScreen() {
         }
 
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(26.dp))
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -168,6 +188,152 @@ fun ContactScreen() {
                 Text("Send Mail")
             }
 
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            elevation = CardDefaults.cardElevation(10.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                                MaterialTheme.colorScheme.surface
+                            )
+                        )
+                    )
+                    .padding(vertical = 24.dp, horizontal = 20.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+
+                // 👤 PROFILE IMAGE
+                Surface(
+                    shape = CircleShape,
+                    tonalElevation = 6.dp,
+                    shadowElevation = 6.dp
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.profile),
+                        contentDescription = "Profile",
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                showImage = true
+                            }
+                    )
+                }
+
+                Text(
+                    text = "App Developer",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Text(
+                    text = "Hanson Vaz",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = "hansonvaz0704@gmail.com",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable {
+                        val intent = Intent(
+                            Intent.ACTION_SENDTO,
+                            "mailto:hansonvaz0704@gmail.com".toUri()
+                        )
+                        context.startActivity(intent)
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = "Follow me",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(24.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    SocialIcon(R.drawable.github) {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, "https://github.com/hanson0704".toUri())
+                        )
+                    }
+
+                    SocialIcon(R.drawable.linkedin) {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, "https://www.linkedin.com/in/hanson-vaz/".toUri())
+                        )
+                    }
+
+                    SocialIcon(R.drawable.instagram) {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, "https://www.instagram.com/hanson_vaz/".toUri())
+                        )
+                    }
+                }
+            }
+        }
+
+        if (showImage) {
+            Dialog(onDismissRequest = { showImage = false }) {
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black)
+                        .clickable { showImage = false },
+                    contentAlignment = Alignment.Center
+                ) {
+
+                    Image(
+                        painter = painterResource(R.drawable.profile),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+                }
+            }
+        }
+
+
+    }
+}
+
+@Composable
+fun SocialIcon(icon: Int, onClick: () -> Unit) {
+    Surface(
+        shape = CircleShape,
+        tonalElevation = 4.dp,
+        shadowElevation = 4.dp,
+        modifier = Modifier.size(52.dp)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.clickable { onClick() }
+        ) {
+            Image(
+                painter = painterResource(icon),
+                contentDescription = null,
+                modifier = Modifier.size(26.dp)
+            )
         }
     }
 }
