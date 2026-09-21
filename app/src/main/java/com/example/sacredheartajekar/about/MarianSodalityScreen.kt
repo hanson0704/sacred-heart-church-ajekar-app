@@ -51,7 +51,13 @@ fun MarianSodalityScreen(onBack: () -> Unit) {
 
         Text(
             text = """
-                 TextGoesHere
+The Marian Sodality is a devoted group within the parish dedicated to honoring the Blessed Virgin Mary and growing in spiritual life through her example.
+
+Members of the Marian Sodality strive to deepen their faith by participating in regular prayers, Rosary recitations, and Marian feasts. They play an active role in parish activities, fostering unity, service, and devotion among the faithful.
+
+At Sacred Heart Church, Ajekar, the Marian Sodality encourages its members to imitate the virtues of Mother Mary—humility, obedience, purity, and unwavering faith in God.
+
+Through prayer, service, and community involvement, the Sodality continues to inspire parishioners to live a Christ-centered life guided by the loving intercession of the Blessed Mother.
             """.trimIndent(),
             style = MaterialTheme.typography.bodyLarge,
             lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.4

@@ -11,18 +11,52 @@ class NewsRepository {
 
     // 🔥 REALTIME LISTENER
     fun listenToNews(onChange: (List<NewsItem>) -> Unit) {
+
         newsRef
-            .orderBy("date", Query.Direction.DESCENDING)
+            .orderBy("timestamp", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, _ ->
-                val newsList = snapshot?.toObjects(NewsItem::class.java) ?: emptyList()
+
+                val newsList = snapshot?.documents?.map { doc ->
+
+                    NewsItem(
+                        id = doc.id,
+                        title = doc.getString("title") ?: "",
+                        date = doc.getString("date") ?: "",
+                        type = doc.getString("type") ?: "",
+                        timestamp = doc.getLong("timestamp") ?: 0L,
+                        expiresAt = doc.getLong("expiresAt") ?: 0L
+                    )
+
+                } ?: emptyList()
+
                 onChange(newsList)
             }
     }
 
-    // POST news (same as before)
+    // ➕ ADD NEWS
     fun addNews(newsItem: NewsItem, onResult: (Boolean) -> Unit) {
+
         newsRef
             .add(newsItem)
+            .addOnSuccessListener { onResult(true) }
+            .addOnFailureListener { onResult(false) }
+    }
+
+    // 🗑 DELETE NEWS
+    fun deleteNews(id: String, onResult: (Boolean) -> Unit) {
+
+        firestore.collection("news")
+            .document(id)
+            .delete()
+            .addOnSuccessListener { onResult(true) }
+            .addOnFailureListener { onResult(false) }
+    }
+
+    fun updateNews(newsItem: NewsItem, onResult: (Boolean) -> Unit) {
+
+        newsRef
+            .document(newsItem.id)
+            .set(newsItem)
             .addOnSuccessListener { onResult(true) }
             .addOnFailureListener { onResult(false) }
     }

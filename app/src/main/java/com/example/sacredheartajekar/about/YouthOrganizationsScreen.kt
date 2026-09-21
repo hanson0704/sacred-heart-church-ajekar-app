@@ -50,8 +50,20 @@ fun YouthOrganizationsScreen(onBack: () -> Unit) {
 
         Text(
             text = """
-                 TextGoesHere
-            """.trimIndent(),
+The youth of Sacred Heart Church, Ajekar actively participate in parish life through two important organizations: ICYM (Indian Catholic Youth Movement) and YCS (Young Christian Students). These groups provide a strong foundation for young members to grow in faith, leadership, and service.
+
+Indian Catholic Youth Movement (ICYM)
+ICYM focuses on the overall development of youth through spiritual growth, leadership, and social responsibility. Members actively participate in prayer meetings, retreats, parish feasts, cultural programs, and social outreach activities. It encourages teamwork, confidence, and active involvement in parish life.
+
+Through ICYM, young people are given opportunities to take initiative, organize events, and contribute meaningfully to the Church. It helps them become responsible leaders rooted in Christian values and committed to serving society.
+
+Young Christian Students (YCS)
+YCS is centered on guiding students to live Christian values in their academic and daily lives. It promotes discipline, reflection, and moral responsibility through regular meetings, discussions, and faith-based activities.
+
+YCS encourages students to balance their studies with spiritual growth, helping them make value-based decisions and live as true witnesses of Christ in their schools and communities. It also nurtures a sense of responsibility, integrity, and faith in young minds.
+
+Together, ICYM and YCS play a vital role in shaping the youth of the parish. They help young members grow in faith, unity, and service, preparing them to actively participate in the life of the Church and contribute positively to society.
+""".trimIndent(),
             style = MaterialTheme.typography.bodyLarge,
             lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.4
         )

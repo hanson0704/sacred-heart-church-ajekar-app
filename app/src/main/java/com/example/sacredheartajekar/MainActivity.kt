@@ -1,21 +1,19 @@
 package com.example.sacredheartajekar
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.sacredheartajekar.ui.theme.SacredHeartAjekarTheme
 import androidx.compose.runtime.getValue
@@ -32,13 +30,18 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.sacredheartajekar.about.*
+import com.example.sacredheartajekar.admin.AdminEditMassScreen
+import com.example.sacredheartajekar.admin.AdminEventScreen
+import com.example.sacredheartajekar.admin.AdminGalleryScreen
 import com.example.sacredheartajekar.viewmodel.NewsViewModel
 import com.example.sacredheartajekar.admin.AdminLoginScreen
 import com.example.sacredheartajekar.admin.AdminPanelScreen
+import com.example.sacredheartajekar.admin.AdminPostUpdateScreen
 import com.example.sacredheartajekar.model.NewsItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
@@ -50,6 +53,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         FirebaseMessaging.getInstance().subscribeToTopic("parish_updates")
+
+        // 🔔 ASK NOTIFICATION PERMISSION (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                1
+            )
+        }
 
         setContent {
             SacredHeartAjekarTheme {
@@ -69,7 +81,10 @@ fun MainScreen() {
     val announcements by newsViewModel.announcements.collectAsState()
 
     // Latest announcement for HomeScreen
-    val latestAnnouncement = announcements.firstOrNull()
+    val latestAnnouncement =
+        announcements
+            .filter { it.type == "announcement" }
+            .maxByOrNull { it.timestamp }
 
     Scaffold(
         bottomBar = {
@@ -90,10 +105,20 @@ fun MainScreen() {
                     onAboutUsClick = { navController.navigate("about") },
                     latestAnnouncement = latestAnnouncement,
                     onAdminClick = { navController.navigate("admin_login") },
+                    isAdmin = FirebaseAuth.getInstance().currentUser != null,
+                    onEditMassClick = {
+                        navController.navigate("edit_mass")
+                    }
                 )
             }
 
             // ✅ Firebase-driven NewsScreen
+
+            composable("edit_mass") {
+                AdminEditMassScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
             composable("news") { NewsScreen() }
 
             composable("events") { EventsScreen() }
@@ -159,14 +184,39 @@ fun MainScreen() {
                 AdminPanelScreen(
                     onLogout = {
                         FirebaseAuth.getInstance().signOut()
-
                         navController.navigate("home") {
                             popUpTo("admin_panel") { inclusive = true }
-                            launchSingleTop = true
                         }
+                    },
+                    onAddEventClick = {
+                        navController.navigate("admin_add_event")
+                    },
+                    onAddGalleryClick = {
+                        navController.navigate("admin_gallery")
+                    },
+                    onPostUpdateClick = {
+                        navController.navigate("post_update")
                     }
                 )
             }
+
+            composable("post_update") {
+                AdminPostUpdateScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable("admin_add_event") {
+                AdminEventScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable("admin_gallery") {
+                AdminGalleryScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
         }
     }
 }
@@ -210,23 +260,6 @@ fun BottomNavBar(navController: NavController) {
     }
 }
 
-
-@Composable
-fun ScreenTemplate(title: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-
-
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
@@ -251,7 +284,9 @@ fun MainScreenPreview() {
                     "19-02-2026",
                     "announcement"
                 ),
-                onAdminClick = {}
+                onAdminClick = {},
+                isAdmin = true,
+                onEditMassClick = {}
             )
         }
     }
