@@ -71,13 +71,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
-    implementation(platform("androidx.compose:compose-bom:latest"))
-    implementation("androidx.compose.material3:material3")
-
     implementation("com.google.firebase:firebase-messaging:23.4.1")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("com.google.firebase:firebase-storage-ktx")
-    implementation("io.coil-kt:coil-compose:2.6.0")
-    implementation("androidx.compose.foundation:foundation:1.6.0")
-
 }
